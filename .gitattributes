@@ -1,0 +1,11 @@
+*.java text
+*.yml text
+*.xml text
+*.txt text
+*.md text
+
+*.png binary
+*.jpg binary
+*.jar binary
+
+* text=auto

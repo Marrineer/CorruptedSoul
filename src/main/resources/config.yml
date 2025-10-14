@@ -1,0 +1,15 @@
+prefix: "???"
+
+chance: 10 # %
+
+corruptedSoul:
+  displayName: "<b><gradient:#FFFFFF:#FF00E3>Corrupted Soul</gradient></b>"
+  lore:
+    - "Add something here babe"
+
+autoSave:
+  enable: true
+  interval: 600 # Second
+
+message:
+  whole-server: false #Gửi message ra toàn server
