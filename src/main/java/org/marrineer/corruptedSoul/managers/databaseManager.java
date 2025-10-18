@@ -9,20 +9,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class databaseManager {
+    private final CorruptedSoul plugin;
+    private final Map<UUID, Integer> usageCache = new ConcurrentHashMap<>();
     private Connection connection;
-    private String dbType;
+    private final String dbType;
     private String sqliteFile;
     private String host, dbName, user, password;
     private int port;
-    private final CorruptedSoul plugin;
     private boolean cacheLoaded = false;
-    private final Map<UUID, Integer> usageCache = new ConcurrentHashMap<>();
 
     public databaseManager(CorruptedSoul plugin) {
         this.plugin = plugin;
         String type = plugin.getConfig().getString("database.type", "SQLITE");
         dbType = type.toUpperCase();
-        if(dbType.equals("MYSQL")) {
+        if (dbType.equals("MYSQL")) {
             host = plugin.getConfig().getString("database.host", "localhost");
             port = plugin.getConfig().getInt("database.port", 3306);
             dbName = plugin.getConfig().getString("database.name", "soul_db");
@@ -50,16 +50,18 @@ public class databaseManager {
         }
         loadCache();
     }
+
     public void disconnect() {
         flushCache();
         try {
-            if(connection != null && !connection.isClosed()) {
+            if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error while disconnecting from the database");
         }
     }
+
     private void loadCache() {
         String sql = "SELECT player_uuid, soul_count FROM soulCounter";
 
@@ -75,24 +77,27 @@ public class databaseManager {
             plugin.getLogger().log(Level.SEVERE, "Error loading data to cache", e);
         }
     }
-    public int getUsage(UUID playerUUID) {
+
+    public int getCount(UUID playerUUID) {
         if (!cacheLoaded) {
             plugin.getLogger().warning("Cache not loaded yet!");
             return 0;
         }
         return usageCache.getOrDefault(playerUUID, 0);
     }
-    public void incrementUsage(UUID playerUUID) {
+
+    public void incrementCount(UUID playerUUID) {
         if (!cacheLoaded) {
             plugin.getLogger().warning("Cache not loaded yet!");
             return;
         }
-        int current = getUsage(playerUUID);
+        int current = getCount(playerUUID);
         usageCache.put(playerUUID, current + 1);
     }
+
     public void flushCache() {
         if (!cacheLoaded || usageCache.isEmpty()) return;
-        String sql = "INSERT OR REPLACE INTO playerUsage (player_uuid, usage_count) VALUES (?, ?)";
+        String sql = "INSERT OR REPLACE INTO soulCounter (player_uuid, soul_count) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             connection.setAutoCommit(false);
             for (Map.Entry<UUID, Integer> entry : usageCache.entrySet()) {
@@ -113,15 +118,22 @@ public class databaseManager {
             plugin.getLogger().log(Level.SEVERE, "Error flushing cache to database", e);
         }
     }
+
     public void startAutoFlush(double intervalSecond) {
-        if(!plugin.getConfig().getBoolean("autoSave.enable")) {
+        if (!plugin.getConfig().getBoolean("autoSave.enabled")) {
             long intervalTicks = (long) (intervalSecond * 20L);
             plugin.getServer().getScheduler().runTaskTimerAsynchronously(
                     plugin, this::flushCache, intervalTicks, intervalTicks
             );
         }
     }
-    public boolean isCacheLoaded() { return cacheLoaded; }
-    public int getCacheSize() { return usageCache.size(); }
+
+    public boolean isCacheLoaded() {
+        return cacheLoaded;
+    }
+
+    public int getCacheSize() {
+        return usageCache.size();
+    }
 
 }

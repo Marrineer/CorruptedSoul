@@ -1,15 +1,26 @@
 prefix: "???"
 
-chance: 10 # %
+soulDrop:
+  enabled: true
+  chance:
+    corruptedSoul: 5.0
+    cursedSoul: 2.5
 
-corruptedSoul:
-  displayName: "<b><gradient:#FFFFFF:#FF00E3>Corrupted Soul</gradient></b>"
-  lore:
-    - "Add something here babe"
+soulInfo:
+  corruptedSoul:
+    displayName: "<b><gradient:#999F29:#37373C>Corrupted Soul</gradient></b>"
+    lore:
+      - "Something here"
+  cursedSoul:
+    displayName: "<b><gradient:#FF0000:#37373C>Cursed Soul</gradient></b>"
+    lore:
+      - "Something here"
+  fadedSoul:
+    displayName: "<b><gradient:#FFFFFF:#37373C>Faded Soul</gradient></b>"
+    duration: "12h"
+    lore:
+      - "Something here"
 
 autoSave:
-  enable: true
+  enabled: true
   interval: 600 # Second
-
-message:
-  whole-server: false #Gửi message ra toàn server

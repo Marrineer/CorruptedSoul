@@ -14,6 +14,7 @@ public class soulExpansion extends PlaceholderExpansion {
         this.plugin = plugin;
         this.dbManager = dbManager;
     }
+
     @Override
     public @NotNull String getIdentifier() {
         return "corruptedsoul";
@@ -31,8 +32,8 @@ public class soulExpansion extends PlaceholderExpansion {
 
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (player == null) return "";
-        return switch(identifier.toLowerCase()) {
-            case "totalsoul" -> String.valueOf(dbManager.getUsage(player.getUniqueId()));
+        return switch (identifier.toLowerCase()) {
+            case "totalsoul" -> String.valueOf(dbManager.getCount(player.getUniqueId()));
             default -> null;
         };
     }

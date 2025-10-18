@@ -3,5 +3,5 @@ version: '1.0-SNAPSHOT'
 main: org.marrineer.corruptedSoul.CorruptedSoul
 api-version: '1.21'
 authors: "Marrineer"
-depend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI]
 description: Harvest, craft, and trade the souls of the fallen. RPG & Economy system for your server

@@ -16,11 +16,12 @@ public class messageManager {
     public messageManager(CorruptedSoul plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "messages.yml");
-        if(!file.exists()) {
+        if (!file.exists()) {
             plugin.saveResource("messages.yml", false);
         }
         reload();
     }
+
     public void reload() {
         this.messages = YamlConfiguration.loadConfiguration(file);
         FileConfiguration defaultMessage = YamlConfiguration.loadConfiguration(
@@ -30,5 +31,7 @@ public class messageManager {
         messages.options().copyDefaults(true);
     }
 
-    public FileConfiguration getMessages() { return messages; }
+    public FileConfiguration getMessages() {
+        return messages;
+    }
 }

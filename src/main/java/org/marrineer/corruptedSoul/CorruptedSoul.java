@@ -17,24 +17,26 @@ import java.sql.SQLException;
 
 public final class CorruptedSoul extends JavaPlugin {
     public static CorruptedSoul instance;
+    private final double interval = getConfig().getDouble("autoSave.interval", 600);
     private BukkitAudiences adventure;
     private messageManager MessageManager;
     private FileConfiguration messages;
     private databaseManager dbManager;
     private soulExpansion PAPI;
-    private final double interval = getConfig().getDouble("autoSave.interval", 600);
 
-    public static CorruptedSoul getInstance() { return instance; }
-    public BukkitAudiences adventure() { return this.adventure; }
+    public static CorruptedSoul getInstance() {
+        return instance;
+    }
+
+    public BukkitAudiences adventure() {
+        return this.adventure;
+    }
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
         logg("Enabling");
-
-        PAPI = new soulExpansion(this, dbManager);
-        PAPI.register();
 
 
         this.adventure = BukkitAudiences.create(this);
@@ -53,6 +55,12 @@ public final class CorruptedSoul extends JavaPlugin {
                 });
             }
         });
+        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            PAPI = new soulExpansion(this, dbManager);
+            PAPI.register();
+        } else {
+            getLogger().warning("PAPI isn't available, placeholder will not work");
+        }
         Bukkit.getPluginManager().registerEvents(new soulDrop(this, dbManager), this);
     }
 
@@ -60,12 +68,12 @@ public final class CorruptedSoul extends JavaPlugin {
     public void onDisable() {
         logg("Disabling");
         saveConfig();
-        if(dbManager != null) {
+        if (dbManager != null) {
             dbManager.disconnect();
             dbManager = null;
             getLogger().info("Database disconnected");
         }
-        if(this.adventure != null) {
+        if (this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
         }
@@ -89,7 +97,15 @@ public final class CorruptedSoul extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', text.toString()));
     }
 
-    public Audience audience(CommandSender sender) { return adventure.sender(sender); }
-    public Audience audience(Player player) { return adventure.player(player); }
-    public FileConfiguration getMessages() { return MessageManager.getMessages(); }
+    public Audience audience(CommandSender sender) {
+        return adventure.sender(sender);
+    }
+
+    public Audience audience(Player player) {
+        return adventure.player(player);
+    }
+
+    public FileConfiguration getMessages() {
+        return MessageManager.getMessages();
+    }
 }
