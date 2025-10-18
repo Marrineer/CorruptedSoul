@@ -6,30 +6,46 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI
+name: Maven CI
 
 on:
   push:
-    branches: [ "master" ]
+    tags:
+      - 'v*'
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      - name: Set up JDK 21 ( Temurin )
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Project with Maven
+        run: mvn -B clean package --file ./pom.xml
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }}"
+          tag_name: "${{ github.ref_name }}"
+          body: |
+            🧪 This is an automatic release build.
+            - Commit: ${{ github.sha }}
+            - Branch: ${{ github.ref }}
+          files: |
+            target/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
